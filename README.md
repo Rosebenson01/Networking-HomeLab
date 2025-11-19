@@ -27,6 +27,7 @@ This homelab simulates a small enterprise network environment using Cisco device
 | ASA 5505    | Pending            | 2960-X uplink     | Factory reset, to configure later|
 
 ---
+Router Configiration (2911)
 
 ## VLAN & Switch Configuration (2960-X)
 ```text
@@ -44,3 +45,14 @@ interface range Gi1/0/25 - 26
  switchport mode trunk
  switchport trunk allowed vlan 10
  no shutdown
+
+Router Configiration (2911)
+interface g0/0.10
+ encapsulation dot1Q 10
+ ip address 10.10.10.1 255.255.255.0
+ no shutdown
+
+ip dhcp pool LAN
+ network 10.10.10.0 255.255.255.0
+ default-router 10.10.10.1
+ dns-server 8.8.8.8
