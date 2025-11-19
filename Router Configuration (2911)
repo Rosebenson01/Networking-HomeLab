@@ -1,0 +1,90 @@
+=========================================
+ Cisco 2911 Router - Base Configuration
+ Author: Rose
+ Purpose: Homelab Core Router
+ Date: YYYY-MM-DD
+=========================================
+
+!
+! ===== BASIC SYSTEM SETUP =====
+!
+hostname R1-2911
+ip domain-name homelab.local
+no ip domain-lookup
+
+!
+! ===== LOCAL USER ACCOUNT =====
+!
+username admin privilege 15 secret <YOUR_PASSWORD>
+
+!
+! ===== SSH CONFIG =====
+!
+crypto key generate rsa modulus 2048
+ip ssh version 2
+line vty 0 4
+ login local
+ transport input ssh
+ exec-timeout 10
+!
+
+!
+! ===== INTERFACES =====
+!
+! *** LAN Interface (to Switch) ***
+interface GigabitEthernet0/0
+ description *** LAN to 2960X ***
+ ip address 10.10.10.1 255.255.255.0
+ no shutdown
+!
+
+! *** Future Router-on-a-Stick (subinterfaces for VLANs) ***
+! interface GigabitEthernet0/0.10
+!  encapsulation dot1Q 10
+!  ip address 10.10.10.1 255.255.255.0
+! interface GigabitEthernet0/0.20
+!  encapsulation dot1Q 20
+!  ip address 10.20.20.1 255.255.255.0
+
+!
+! *** ASA / WAN Interface (future use) ***
+interface GigabitEthernet0/1
+ description *** Connection to ASA 5505 ***
+ no shutdown
+!
+
+!
+! ===== DHCP SERVER =====
+!
+ip dhcp excluded-address 10.10.10.1 10.10.10.5
+
+ip dhcp pool LAN
+ network 10.10.10.0 255.255.255.0
+ default-router 10.10.10.1
+ dns-server 1.1.1.1 8.8.8.8
+ domain-name homelab.local
+!
+
+!
+! ===== ROUTING =====
+!
+! Default route to ASA (placeholder)
+! ip route 0.0.0.0 0.0.0.0 <ASA_INSIDE_IP>
+
+!
+! ===== LOGGING =====
+!
+service timestamps log datetime msec
+logging buffered 100000
+!
+
+!
+! ===== BANNER =====
+!
+banner motd ^C
+UNAUTHORIZED ACCESS PROHIBITED
+This is a homelab device.
+^C
+!
+
+end
